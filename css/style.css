@@ -560,13 +560,18 @@ button.danger { color: #d32f2f; }
     font-size: 0.8rem;
     color: var(--dim-color);
     opacity: 0.6;
-    pointer-events: auto; /* Allow hover */
+    text-decoration: none !important;
+    border: none !important;
+    outline: none !important;
+    pointer-events: auto; 
     transition: opacity 0.2s ease, color 0.2s ease;
 }
 
 .version-info:hover {
     opacity: 1;
     color: var(--accent-color);
+    text-decoration: none !important;
+    border: none !important;
 }
 
 /* UI Corners Top */
@@ -979,4 +984,182 @@ button.danger { color: #d32f2f; }
     opacity: 0.3;
     pointer-events: none;
     filter: grayscale(1);
+}
+
+
+
+/* --- ABOUT & SUBTITLE STYLING --- */
+
+.subtitle {
+    margin-top: -3rem; 
+    margin-bottom: 3rem;
+    font-size: 1rem;
+    color: var(--dim-color);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.stealth-link {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+.stealth-link:hover {
+    color: var(--accent-color);
+    border-bottom-color: var(--accent-color);
+}
+
+.about-split-layout {
+    display: flex;
+    flex-direction: row;
+    width: 800px;
+    max-width: 90vw;
+    height: auto;
+    min-height: 400px;
+    align-items: stretch;
+    background: transparent;
+    padding: 0;
+}
+
+/* LEFT PANEL */
+.about-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-right: 1px solid var(--dim-color);
+    padding: 2rem;
+}
+
+#about-symbol-display {
+    font-size: 8rem;
+    line-height: 1;
+    color: var(--text-color);
+    margin-bottom: 2rem;
+    font-family: var(--font-main);
+    min-height: 1.2em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.about-brand {
+    font-size: 1.2rem;
+    letter-spacing: 0.3em;
+    color: var(--text-color); /* Full opacity */
+    font-weight: bold;
+}
+
+/* RIGHT PANEL */
+.about-right {
+    flex: 1.2; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem;
+    text-align: center;
+}
+
+.about-avatar-link {
+    display: block;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+.about-avatar-link:hover {
+    opacity: 0.8;
+}
+
+.about-avatar {
+    width: 110px; /* Bigger */
+    height: 110px;
+    border-radius: 50%;
+    margin-bottom: 1.5rem;
+    border: none; /* No outline */
+    box-shadow: none; /* No shadow */
+}
+
+.about-header {
+    font-size: 1.2rem;
+    letter-spacing: 0.2em;
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.about-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-color);
+    margin-bottom: 2rem;
+}
+.about-text p { margin-bottom: 0.8rem; }
+.about-text em { 
+    color: var(--dim-color); /* Lighter grey */
+    font-style: italic; /* Actual Italics */
+}
+
+.social-row {
+    display: flex;
+    justify-content: center;
+    gap: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+.social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: var(--dim-color);
+    transition: color 0.3s ease;
+}
+.social-icon:hover {
+    color: var(--selection-bg); /* Match selected text color */
+    transform: none; /* No movement */
+}
+
+.credit-text {
+    font-size: 0.75rem;
+    color: var(--dim-color);
+    margin-bottom: 2rem;
+    line-height: 1.4;
+}
+.credit-text p { margin-bottom: 0.2rem; }
+.credit-text a {
+    color: var(--accent-color);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--accent-color);
+}
+.credit-text a:hover {
+    color: var(--text-color);
+    border-bottom-style: solid;
+}
+
+#btn-close-about {
+    margin-top: auto;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .about-split-layout {
+        flex-direction: column;
+        width: 100%;
+        height: auto;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    .about-left {
+        border-right: none;
+        border-bottom: 1px solid var(--dim-color);
+        padding: 2rem 1rem;
+        flex: 0 0 auto;
+    }
+    #about-symbol-display { font-size: 5rem; margin-bottom: 1rem; }
+    .about-right { padding: 2rem 1rem; }
 }

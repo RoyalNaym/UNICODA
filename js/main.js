@@ -118,6 +118,7 @@ const dom = {
     },
     display: document.getElementById('composition-display'),
     clock: document.getElementById('clock-display'),
+    aboutSymbol: document.getElementById('about-symbol-display'),
     titleContainer: document.getElementById('title-container'),
     title: document.getElementById('composition-title'),
     loaderDisplay: document.getElementById('loader-display'),
@@ -231,6 +232,49 @@ const ClockSystem = {
     }
 };
 
+// --- ABOUT ANIMATION ---
+const AboutAnimation = {
+    interval: null,
+    // Updated Pool
+    pool: ['❖', '☩', '⌘', '⌂', '⚷', '⍾', '⚙', '⚠', '⚬', '☼', '⧉', '⎈', 'ꙮ', '𖨆', '𖡄', '𒀭', '𖭅', 'ጸ'],
+    lastSymbol: '',
+    
+    start() {
+        if (this.active) return;
+        this.active = true;
+        this.tick();
+        this.interval = setInterval(() => this.tick(), 2500); // Slower shift to let them breathe
+    },
+    
+    stop() {
+        this.active = false;
+        clearInterval(this.interval);
+    },
+    
+    tick() {
+        // Non-repeating random selection
+        let nextSymbol;
+        do {
+            nextSymbol = this.pool[Math.floor(Math.random() * this.pool.length)];
+        } while (nextSymbol === this.lastSymbol);
+        
+        this.lastSymbol = nextSymbol;
+        
+        // Flicker / Scramble Effect
+        const blockChars = ["█", "▓", "▒", "░"];
+        let flickerCount = 0;
+        
+        const flicker = setInterval(() => {
+            dom.aboutSymbol.textContent = blockChars[Math.floor(Math.random() * blockChars.length)];
+            flickerCount++;
+            if (flickerCount > 6) { 
+                clearInterval(flicker);
+                dom.aboutSymbol.textContent = nextSymbol;
+            }
+        }, 60);
+    }
+};
+
 // --- INITIALIZATION ---
     
 function init() {
@@ -318,8 +362,14 @@ function init() {
     document.getElementById('btn-add-note').addEventListener('click', () => window.AnnotationsSystem.createNote());
     document.getElementById('btn-lists').addEventListener('click', () => { openLists(); toggleOverlay('lists', true); });
     document.getElementById('btn-settings').addEventListener('click', () => toggleOverlay('settings', true));
-    document.getElementById('btn-close-about').addEventListener('click', () => toggleOverlay('about', false));
-    document.getElementById('btn-about').addEventListener('click', () => toggleOverlay('about', true));
+    document.getElementById('btn-about').addEventListener('click', () => {
+        toggleOverlay('about', true);
+        AboutAnimation.start();
+    });
+    document.getElementById('btn-close-about').addEventListener('click', () => {
+        toggleOverlay('about', false);
+        AboutAnimation.stop();
+    });
     document.getElementById('btn-close-settings').addEventListener('click', () => toggleOverlay('settings', false));
     document.getElementById('btn-close-lists').addEventListener('click', () => toggleOverlay('lists', false));
 
