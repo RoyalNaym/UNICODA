@@ -1,0 +1,929 @@
+/* 
+   1. UNIFONT EX - RESTRICTED TO BLOCKS
+   unicode-range: U+2580-259F
+   size-adjust: 120% (Stretches width to match Noto)
+   ascent-override: 60% (Drastically lowers the visual center of blocks)
+*/
+@font-face {
+  font-family: 'UnifontEX';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/unifontex@latest/latin-400-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/unifontex@latest/latin-400-normal.woff) format('woff');
+  unicode-range: U+2580-259F;
+  size-adjust: 120%; 
+  ascent-override: 60%;
+}
+
+:root {
+    --bg-color: #0a0a0a;
+    --text-color: #d4d4d4;
+    --accent-color: #a0a0a0;
+    --dim-color: #404040;
+    --selection-bg: #d32f2f;
+    --selection-text: #ffffff;
+    
+    /* Post-it Theme */
+    --note-bg: rgba(26, 26, 26, 0.80);
+    --note-header: #252525;
+    --note-border: #404040;
+    --note-text: #d4d4d4;
+    --note-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    
+    /* 
+       THE STABILITY STACK:
+       1. UnifontEX (Blocks only)
+       2. Noto Sans Mono (Stable primary text)
+       3. Noto Symbols (Google's comprehensive set)
+       4. Noto Symbols 2 (Extended set)
+       5. System Monospace Stack 
+    */
+    --font-main: 'UnifontEX', 'Noto Sans Mono', 'Noto Sans Symbols', 'Noto Sans Symbols 2', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    
+    --font-reading-size: 2.1vmin; 
+    --line-height: 1.6;
+}
+
+/* --- THEMES --- */
+
+[data-theme="light"] {
+    --bg-color: #f5f5f5;
+    --text-color: #1a1a1a;
+    --accent-color: #555555;
+    --dim-color: #777777; 
+    --selection-bg: #d32f2f;
+    --selection-text: #ffffff;
+    
+    --note-bg: rgba(255, 255, 255, 0.80);
+    --note-header: #e0e0e0;
+    --note-border: #cccccc;
+    --note-text: #1a1a1a;
+    --note-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+[data-theme="burgundy"] {
+    --bg-color: #2d0a0a;
+    --text-color: #ffd1d1;
+    --accent-color: #ff4d4d;
+    --dim-color: #5d1212;
+    --selection-bg: #ff4d4d;
+    --selection-text: #ffffff;
+    
+    --note-bg: rgba(45, 10, 10, 0.80);
+    --note-header: #4a0e0e;
+    --note-border: #5d1212;
+    --note-text: #ffd1d1;
+    --note-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+[data-theme="burgundy-light"] {
+    --bg-color: #fff0f0;
+    --text-color: #4a0e0e;
+    --accent-color: #8b0000;
+    --dim-color: #ffcccc;
+    --selection-bg: #d32f2f;
+    --selection-text: #ffffff;
+    
+    --note-bg: rgba(255, 240, 240, 0.80);
+    --note-header: #ffcccc;
+    --note-border: #ff9999;
+    --note-text: #4a0e0e;
+    --note-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+::selection {
+    background: var(--selection-bg);
+    color: var(--selection-text);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-main);
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    
+    /* Startup Fade Mechanics */
+    opacity: 0;
+    animation: pageEntry 0.4s ease-out forwards;
+    
+    /* Smooth theme transitions after load */
+    transition: background-color 0.8s ease, color 0.8s ease;
+}
+
+@keyframes pageEntry {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* Force elements to use the variable stack */
+pre, textarea, input, select, button {
+    font-family: var(--font-main);
+}
+
+/* UI Lock */
+body.ui-locked button, 
+body.ui-locked .overlay,
+body.ui-locked .note {
+    pointer-events: none !important;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+}
+
+/* ASCII Backdrop */
+#ascii-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    font-size: 14px;
+    line-height: 1;
+    opacity: 0; /* Default to invisible to prevent flash-on-load */
+    overflow: hidden;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    transition: opacity 0.5s ease, background-color 0.8s ease, color 0.8s ease;
+    white-space: pre;
+    font-family: 'Courier New', Courier, monospace; 
+}
+
+/* Custom Tooltip */
+#global-tooltip {
+    position: fixed;
+    pointer-events: none;
+    background: var(--note-bg);
+    color: var(--note-text);
+    border: 1px solid var(--note-border);
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    /* Default: Centered horizontally, shifted up */
+    transform: translate(-50%, -100%); 
+    margin-top: -10px; /* Gap */
+}
+#global-tooltip.visible {
+    opacity: 1;
+}
+
+/* Notes Layer */
+#notes-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 50;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* Main App */
+#app {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* Allow pointer events for specific UI elements */
+button, input, #composition-wrapper, .overlay, select, #intro-content {
+    pointer-events: auto;
+}
+
+section {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none; /* Prevent clicks on hidden screens */
+    transition: opacity 0.5s ease;
+}
+
+section.active { 
+    opacity: 1; 
+    pointer-events: auto; /* Re-enable clicks when active */
+    z-index: 20; 
+}
+
+/* STATIC TITLE LAYOUT - FLEXBOX FIX */
+h1.project-title {
+    font-size: 8vw;
+    font-weight: 700;
+    margin-bottom: 4rem;
+    white-space: nowrap;
+    line-height: 1; 
+    
+    /* NEW: Use Flexbox Gap instead of letter-spacing */
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem; 
+}
+
+/* Individual spans allow scrambling without layout breaking */
+h1.project-title span {
+    display: flex; /* Center the glyph inside the box */
+    justify-content: center;
+    align-items: center;
+    
+    /* Fix clipping and stretching */
+    width: 1.2ch; 
+    height: 1.2em; 
+    line-height: 1; 
+    overflow: visible; 
+    
+    /* Reset weight to avoid synthetic bolding on blocks */
+    font-weight: normal;
+    
+    text-align: center;
+}
+
+button {
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    font-family: var(--font-main);
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+    transition: color 0.2s ease;
+}
+
+button:hover { color: var(--text-color); }
+button.active { color: var(--text-color); font-weight: bold; }
+button.danger { color: #d32f2f; }
+
+.icon-btn {
+    font-size: 1.4rem;
+    padding: 0.2rem 0; 
+    line-height: 1;
+    vertical-align: middle;
+    width: 48px; 
+    min-width: 48px; 
+    text-align: center;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; 
+}
+
+/* AI Indicator & Skip Button - Symmetrical */
+#nav-skip, #ai-indicator {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    transition: opacity 0.3s ease, color 0.2s ease;
+}
+
+#nav-skip {
+    left: 100%;
+    margin-left: 2.5rem; 
+    color: #d32f2f;
+    opacity: 0;
+    pointer-events: none;
+    white-space: nowrap;
+}
+#nav-skip.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+#nav-skip:hover { color: var(--text-color); }
+
+#ai-indicator {
+    right: 100%;
+    margin-right: 2.5rem;
+    color: var(--selection-bg); /* Use selection red/white */
+    opacity: 0; 
+    pointer-events: auto;
+    cursor: help;
+}
+#ai-indicator.visible {
+    opacity: 1;
+}
+#ai-indicator:hover { 
+    opacity: 0.8; 
+}
+
+.separator {
+    color: var(--dim-color);
+    margin: 0 0.5rem;
+}
+
+/* --- INTRO SEQUENCE REWORK --- */
+#intro-sequence .intro-controls {
+    display: none; /* Hide old buttons */
+}
+
+#intro-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    max-width: 800px;
+    width: 90%;
+    min-height: 400px; /* Use min-height for flexibility */
+    transition: opacity 0.2s ease-in-out;
+}
+
+#intro-content.fading-out {
+    opacity: 0;
+}
+
+.intro-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--accent-color);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    margin-top: 1rem;
+}
+
+.intro-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    white-space: normal; /* Allow text to wrap naturally */
+    margin-bottom: 2rem;
+    max-width: 600px;
+    user-select: text; /* ENABLE SELECTION */
+}
+
+.intro-link {
+    cursor: pointer;
+    color: var(--text-color);
+    font-weight: bold;
+    border-bottom: 1px solid var(--accent-color);
+    transition: color 0.2s, border-color 0.2s;
+}
+.intro-link:hover {
+    color: var(--selection-bg);
+    border-bottom-color: var(--selection-bg);
+}
+
+.intro-example {
+    font-size: var(--font-reading-size);
+    line-height: var(--line-height);
+    letter-spacing: 0.05em;
+    white-space: pre;
+    display: flex;
+    align-items: flex-start; /* FIX: Anchor Geode to top */
+    justify-content: center;
+    width: auto; /* Let it size to content */
+    margin-bottom: 2.5rem; /* Added spacing */
+}
+
+.intro-example pre {
+    text-align: left; /* Align multi-line geodes correctly */
+}
+
+/* Loading Screen */
+#loading-screen {
+    background: var(--bg-color); 
+    z-index: 30;
+    transition: background-color 0.8s ease;
+}
+
+#loader-display { 
+    font-size: var(--font-reading-size);
+    line-height: var(--line-height);
+    color: var(--text-color);
+    white-space: pre;
+    text-align: left;
+    display: inline-block;
+    margin: 0 auto; 
+    transition: opacity 0.5s ease;
+}
+
+/* READER LAYOUT */
+
+#composition-wrapper {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center Vertically */
+    align-items: center;     /* Center Horizontally */
+    width: 100%;
+    padding: 0 2rem; 
+    overflow: hidden;
+    position: relative; 
+}
+
+/* 
+   New Anchor Layout:
+   The anchor holds the pre and title.
+   It has position: relative to contain the absolute title.
+   It is a flex item of composition-wrapper, so it stays centered.
+*/
+#composition-anchor {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 100%;
+}
+
+#composition-display {
+    font-size: var(--font-reading-size);
+    line-height: var(--line-height);
+    letter-spacing: 0.05em;
+    white-space: pre;
+    text-align: left;
+    user-select: text;
+    display: block; /* Ensure it behaves as a block within flex */
+    /* No margin auto needed here, parent flex handles it */
+    transition: opacity 0.5s ease;
+}
+
+/* Title hangs off the bottom of the anchor */
+#title-container {
+    position: absolute;
+    top: 100%; /* Push below passage */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 800px;
+    text-align: center;
+    padding-top: 2.5rem; /* Gap between passage and title */
+}
+
+#composition-title {
+    font-size: calc(var(--font-reading-size) * 0.7); 
+    color: var(--dim-color);
+    cursor: pointer;
+    transition: color 0.3s ease, opacity 0.5s ease;
+    
+    /* JITTER FIX: Lock the geometry of the title */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 1.5em; /* Ensure it occupies space even if empty */
+    line-height: 1.5; /* Strict line height */
+    
+    letter-spacing: 0.1em;
+    opacity: 0;
+    user-select: text;
+}
+
+#composition-title:hover {
+    color: var(--accent-color);
+}
+
+#composition-title.revealed {
+    color: var(--text-color);
+    opacity: 0.8 !important;
+}
+
+#composition-title.hidden {
+    display: none !important;
+}
+
+/* UNIFIED FOOTER */
+#reader-footer {
+    width: 100%;
+    height: 80px; 
+    display: flex; 
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 40;
+    pointer-events: none; /* Let clicks pass through empty space */
+}
+
+#reader-footer > * {
+    pointer-events: auto; /* Re-enable pointer events for children */
+}
+
+/* Title/Intro Mode: Hide center passage navigation arrows */
+.view-title #reader-footer .footer-center .nav-btn {
+    opacity: 0;
+    pointer-events: none;
+}
+.view-intro #reader-footer .footer-center #nav-random {
+    font-size: 1.4rem; /* Match other icons */
+}
+
+
+.footer-left, .footer-center, .footer-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.footer-left {
+    justify-content: flex-start;
+    gap: 0.5rem;
+}
+
+.footer-left .separator {
+    margin: 0 1rem;
+}
+
+.footer-center {
+    justify-content: center;
+    position: relative; 
+    gap: 3rem; 
+}
+
+.footer-right {
+    justify-content: flex-end;
+}
+
+.version-info {
+    font-size: 0.8rem;
+    color: var(--dim-color);
+    opacity: 0.6;
+    pointer-events: auto; /* Allow hover */
+    transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.version-info:hover {
+    opacity: 1;
+    color: var(--accent-color);
+}
+
+/* UI Corners Top */
+.ui-corner {
+    position: absolute;
+    padding: 2rem;
+    z-index: 40;
+}
+.top-right { top: 0; right: 0; }
+.top-left { top: 0; left: 0; }
+
+.filters {
+    display: flex;
+    align-items: center; /* Center boxes */
+    gap: 0.5rem;
+}
+
+.filter-btn {
+    font-weight: normal;
+    opacity: 0.3;
+    font-size: 1.2rem; 
+    /* Flex Box force vertical centering of glyphs */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px; /* Fixed height container */
+    padding: 0 0.5rem; 
+    border: 1px solid transparent; 
+    line-height: 1;
+}
+.filter-btn.active { 
+    opacity: 1; 
+    border-bottom: 2px solid var(--text-color); 
+    font-weight: normal;
+}
+
+/* Geode Symbol Size */
+.filter-btn[data-type="geode"] {
+    font-size: 0.95em; 
+}
+
+#nav-fav.favorited {
+    color: var(--text-color); 
+}
+
+/* Overlays */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+}
+[data-theme="light"] .overlay { background: rgba(255, 255, 255, 0.95); }
+.overlay.hidden { display: none; }
+
+.overlay-content {
+    background: transparent;
+    text-align: center;
+    max-width: 600px;
+    padding: 2rem;
+    font-size: 1.2rem;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 70vh;
+}
+
+.settings-list {
+    width: 400px;
+    height: auto;
+    max-height: 80vh;
+    justify-content: center;
+}
+
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    min-height: 40px; /* Ensure uniform height */
+}
+
+.setting-row.note-size-row {
+    margin-bottom: 1.5rem; /* Reduced to match standard */
+}
+
+.list-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--dim-color);
+    padding-bottom: 1rem;
+    flex-shrink: 0;
+}
+
+.scroll-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    text-align: left;
+    padding: 1rem;
+    background: rgba(255,255,255,0.05);
+    border-radius: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-color) transparent;
+}
+
+.list-item {
+    padding: 1rem 0.8rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--dim-color);
+    transition: background 0.2s;
+    font-size: 0.9rem;
+    
+    white-space: pre; 
+    font-family: var(--font-main);
+    overflow-x: auto; 
+    overflow-y: hidden;
+}
+.list-item:hover { background: rgba(255,255,255,0.1); }
+
+/* --- SMILEY ANNOTATIONS / POST-IT SYSTEM --- */
+
+.sa-global-dragging, .sa-global-dragging * { 
+    user-select: none !important; 
+    cursor: grabbing !important; 
+}
+
+.sa-icon {
+    width: 14px;
+    height: 14px;
+    pointer-events: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.sa-note {
+    position: absolute;
+    display: block;
+    background: transparent !important;
+    border: none !important;
+    pointer-events: auto;
+    min-height: 28px !important;
+    max-height: 95vh;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+}
+
+.sa-note-visual {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--note-bg) !important;
+    color: var(--note-text) !important;
+    border: 1px solid var(--note-border) !important;
+    box-shadow: var(--note-shadow);
+    border-radius: 4px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    transition: opacity 0.4s ease, box-shadow 0.2s;
+}
+
+.sa-note.sa-selected .sa-note-visual {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+}
+
+.sa-note.sa-group-selected .sa-note-visual {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    border-color: var(--accent-color) !important;
+}
+
+.sa-note.sa-closing {
+    pointer-events: none;
+}
+.sa-note.sa-closing .sa-note-visual {
+    opacity: 0;
+    filter: blur(15px);
+    transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+.sa-animating-height {
+    transition: height 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+}
+
+.sa-resizing {
+    transition: none !important;
+    animation: none !important;
+}
+
+.sa-note.sa-dragging {
+    transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+}
+
+.sa-note.sa-minimized .sa-note-visual {
+    overflow: hidden;
+}
+
+.sa-note.sa-minimized .sa-body {
+    height: 0 !important;
+    padding: 0 !important;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.sa-note.sa-minimized .sa-resize-handle {
+    display: none !important;
+}
+
+.sa-header {
+    height: 28px;
+    background: var(--note-header) !important;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    cursor: grab;
+    user-select: none;
+    flex-shrink: 0;
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--note-border);
+}
+
+.sa-header:active {
+    cursor: grabbing;
+}
+
+.sa-collapsed-title {
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--note-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+    pointer-events: none;
+    opacity: 0.5;
+    margin-left: 8px;
+}
+
+.sa-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    z-index: 2;
+}
+
+.sa-btn {
+    background: none !important;
+    border: none;
+    padding: 2px;
+    border-radius: 2px;
+    cursor: pointer;
+    opacity: 0.4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--note-text) !important;
+    transition: opacity 0.2s ease, background-color 0.2s;
+}
+
+.sa-btn:hover {
+    opacity: 1;
+    background: rgba(255,255,255,0.1) !important;
+}
+
+.sa-body {
+    flex-grow: 1;
+    position: relative;
+    min-height: 0;
+    overflow: hidden; /* Added overflow hidden */
+}
+
+.sa-watermark {
+    position: absolute;
+    top: 57%; /* Visual compensation for high baselines */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 120px;
+    line-height: 1; /* Crushes extra vertical space */
+    opacity: 0.05;
+    pointer-events: none;
+    color: var(--note-text);
+    font-family: 'Noto Sans Symbols 2', 'UnifontEX', sans-serif;
+    z-index: 0;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sa-raw-editor {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    resize: none;
+    padding: 12px;
+    font-family: var(--font-main);
+    font-size: 13px;
+    color: var(--note-text);
+    outline: none;
+    box-sizing: border-box;
+    line-height: 1.5;
+    scrollbar-width: none;
+    user-select: text;
+    z-index: 1;
+    position: relative;
+}
+.sa-raw-editor::-webkit-scrollbar { display: none; }
+
+.sa-note[data-size="small"] .sa-raw-editor { font-size: 11px; }
+.sa-note[data-size="medium"] .sa-raw-editor { font-size: 13px; }
+.sa-note[data-size="big"] .sa-raw-editor { font-size: 16px; }
+
+.sa-resize-handle {
+    position: absolute;
+    z-index: 100;
+    touch-action: none;
+}
+
+.sa-resize-br { bottom: -10px; right: -10px; width: 30px; height: 30px; cursor: nwse-resize; z-index: 102; }
+.sa-resize-bl { bottom: -10px; left: -10px; width: 30px; height: 30px; cursor: nesw-resize; z-index: 102; }
+.sa-resize-tr { 
+    top: -5px; 
+    right: -5px; 
+    width: 10px; 
+    height: 10px; 
+    cursor: nesw-resize; 
+    z-index: 102; 
+}
+.sa-resize-tl { top: -10px; left: -10px; width: 30px; height: 30px; cursor: nwse-resize; z-index: 102; }
+
+.sa-resize-b { bottom: -8px; left: 10px; right: 10px; height: 16px; cursor: ns-resize; z-index: 101; }
+.sa-resize-r { top: 10px; bottom: 10px; right: -8px; width: 16px; cursor: ew-resize; z-index: 101; }
+.sa-resize-l { top: 10px; bottom: 10px; left: -8px; width: 16px; cursor: ew-resize; z-index: 101; }
+.sa-resize-t { top: -8px; left: 10px; right: 10px; height: 16px; cursor: ns-resize; z-index: 101; }
+
+/* Startup Fade Utility */
+.startup-fade {
+    animation: fadeEntry 2s ease-out forwards;
+}
+
+@keyframes fadeEntry {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
