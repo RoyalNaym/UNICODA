@@ -9,7 +9,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@300;400;700&family=Noto+Sans+Symbols:wght@400;700&family=Noto+Sans+Symbols+2&display=swap" rel="stylesheet">
-    
+
+    <!-- Unicoda Favicon (Dynamic) -->
+    <link id="app-favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cstyle%3E text %7B font-family: monospace; font-weight: bold; font-size: 42px; fill: %23d4d4d4; %7D %3C/style%3E%3Crect width='64' height='64' rx='8' fill='%231a1a1a'/%3E%3Ctext x='29' y='32' dominant-baseline='central' text-anchor='middle'%3E❖%3C/text%3E%3C/svg%3E">
+
     <link rel="stylesheet" href="css/style.css">
 </head>    
 <body>
@@ -83,6 +86,9 @@
              <button id="btn-settings" class="icon-btn" data-tooltip="Settings">⚙</button>
         </div>
 
+        <!-- PERMANENT CLOCK DISPLAY -->
+        <div id="clock-display" class="hidden"></div>
+
     <!-- Title Screen (Default: Hidden to prevent flash if Skip Title is ON) -->
         <section id="title-screen" class="hidden">
             <h1 id="main-title" class="project-title">
@@ -124,7 +130,7 @@
         <section id="reader" class="hidden">
             <!-- Composition Display -->
             <div id="composition-wrapper">
-                <div id="composition-anchor">
+            <div id="composition-anchor">
                     <pre id="composition-display"></pre>
                     <div id="title-container">
                         <div id="composition-title"></div>
@@ -189,8 +195,13 @@
                 </div>
 
                 <div class="setting-row">
-                    <span>SKIP TITLE SCREEN</span>
-                    <button id="toggle-skip-title" class="text-btn">OFF</button>
+                    <span>NEW TAB MODE</span>
+                    <button id="toggle-new-tab" class="text-btn">OFF</button>
+                </div>
+
+                <div id="row-show-seconds" class="setting-row">
+                    <span>SHOW SECONDS</span>
+                    <button id="toggle-show-seconds" class="text-btn">ON</button>
                 </div>
 
                 <div class="setting-row">

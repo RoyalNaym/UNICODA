@@ -927,3 +927,56 @@ button.danger { color: #d32f2f; }
     0% { opacity: 0; }
     100% { opacity: 1; }
 }
+
+/* CLOCK STYLES */
+#clock-display {
+    position: fixed;
+    top: 22vh;
+    left: 50%;
+    transform: translateX(-50%);
+    
+    font-family: var(--font-main);
+    font-size: 13vmin; /* Significantly bigger */
+    font-weight: normal; 
+    line-height: 1;
+    color: var(--dim-color);
+    
+    /* Layout Logic matching Title Screen */
+    display: flex;
+    justify-content: center;
+    gap: 1rem; /* Distinct spacing between digits */
+    
+    opacity: 0;
+    transition: opacity 0.5s ease, color 0.5s ease;
+    user-select: none;
+    
+    z-index: 35;
+    pointer-events: none; 
+}
+
+#clock-display.visible {
+    opacity: 0.8; /* Much more visible in Dark Mode */
+}
+
+/* Light Mode adjustments */
+[data-theme="light"] #clock-display.visible {
+    opacity: 0.5; /* Balanced for light backgrounds */
+    color: var(--dim-color);
+}
+
+.clock-digit {
+    /* Exact Title Screen geometry to prevent block overlap */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    width: 1.2ch; /* Sufficient width for block chars */
+    height: 1.2em;
+    overflow: visible;
+}
+
+.setting-row.disabled {
+    opacity: 0.3;
+    pointer-events: none;
+    filter: grayscale(1);
+}

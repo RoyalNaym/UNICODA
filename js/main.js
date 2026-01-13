@@ -59,7 +59,7 @@ Object.values(JOURNEYS).forEach(journey => {
     }
 });
 
-    // --- APP STATE ---
+// --- APP STATE ---
     const state = {
     view: 'title', 
     baseTheme: localStorage.getItem('unicoda_base_theme') || 'default', 
@@ -89,7 +89,8 @@ Object.values(JOURNEYS).forEach(journey => {
     pastPiecesShownThisSessionSet: new Set(),
 
     showTitles: localStorage.getItem('unicoda_show_titles') !== 'false',
-    skipTitle: localStorage.getItem('unicoda_skip_title') === 'true', // NEW
+    newTabMode: localStorage.getItem('unicoda_new_tab_mode') === 'true', 
+    showSeconds: localStorage.getItem('unicoda_show_seconds') !== 'false', // Default true
     
     backdropLevels: [0.4, 0.2, 0.1, 0.05, 0],
     backdropIndex: parseInt(localStorage.getItem('unicoda_bg_index') || '2'), 
@@ -116,6 +117,7 @@ const dom = {
         lists: document.getElementById('list-menu')
     },
     display: document.getElementById('composition-display'),
+    clock: document.getElementById('clock-display'),
     titleContainer: document.getElementById('title-container'),
     title: document.getElementById('composition-title'),
     loaderDisplay: document.getElementById('loader-display'),
@@ -129,12 +131,104 @@ const dom = {
         skip: document.getElementById('nav-skip'),
         titleToggle: document.getElementById('toggle-titles'),
         explicitToggle: document.getElementById('toggle-explicit'),
-        skipTitleToggle: document.getElementById('toggle-skip-title'), // NEW
+        newTabToggle: document.getElementById('toggle-new-tab'), 
+        secondsToggle: document.getElementById('toggle-show-seconds'),
         aiInd: document.getElementById('ai-indicator')
+    },
+    rows: {
+        seconds: document.getElementById('row-show-seconds')
     },
     noteSize: document.getElementById('slider-note-size'),
     textSize: document.getElementById('slider-text-size'),
     tooltip: document.getElementById('global-tooltip')
+};
+
+// --- CLOCK SYSTEM ---
+const ClockSystem = {
+    active: false,
+    lastTimeString: "",
+    interval: null,
+
+    start() {
+        if (this.active) return;
+        this.active = true;
+        dom.clock.classList.remove('hidden');
+        dom.clock.classList.add('visible');
+        this.tick(true); // Force immediate render
+        this.interval = setInterval(() => this.tick(), 1000);
+    },
+
+    stop() {
+        this.active = false;
+        if (this.interval) clearInterval(this.interval);
+        dom.clock.classList.remove('visible');
+        dom.clock.classList.add('hidden');
+        dom.clock.innerHTML = "";
+        this.lastTimeString = "";
+    },
+
+    getTimeString() {
+        const now = new Date();
+        const h = String(now.getHours()).padStart(2, '0');
+        const m = String(now.getMinutes()).padStart(2, '0');
+        
+        if (state.showSeconds) {
+            const s = String(now.getSeconds()).padStart(2, '0');
+            return `${h}:${m}:${s}`;
+        }
+        return `${h}:${m}`;
+    },
+
+    tick(force = false) {
+        const timeStr = this.getTimeString();
+        
+        // Re-build DOM if format changed (e.g. seconds toggled) or empty
+        if (dom.clock.children.length !== timeStr.length) {
+            dom.clock.innerHTML = "";
+            timeStr.split('').forEach(char => {
+                const span = document.createElement('span');
+                span.className = 'clock-digit';
+                span.textContent = char;
+                dom.clock.appendChild(span);
+            });
+            this.lastTimeString = timeStr;
+            return;
+        }
+
+        const chars = timeStr.split('');
+        const spans = dom.clock.children;
+        const blockChars = ["█", "▓", "▒", "░"];
+
+        chars.forEach((char, i) => {
+            if (force || char !== this.lastTimeString[i]) {
+                const span = spans[i];
+                if (char === ':') {
+                    span.textContent = ':'; 
+                    return;
+                }
+
+                // Animation Logic:
+                // If it's the seconds part (index 6 or 7 in HH:MM:SS), update instantly.
+                // Otherwise (Hours/Minutes), do the scramble.
+                if (state.showSeconds && i >= 6) {
+                    span.textContent = char;
+                } else {
+                    // Scramble Animation for Minutes/Hours
+                    let flickerCount = 0;
+                    const flicker = setInterval(() => {
+                        span.textContent = blockChars[Math.floor(Math.random() * blockChars.length)];
+                        flickerCount++;
+                        if (flickerCount > 4) { 
+                            clearInterval(flicker);
+                            span.textContent = char;
+                        }
+                    }, 50);
+                }
+            }
+        });
+
+        this.lastTimeString = timeStr;
+    }
 };
 
 // --- INITIALIZATION ---
@@ -181,7 +275,11 @@ function init() {
     // UI Button States
     dom.buttons.titleToggle.textContent = state.showTitles ? 'ON' : 'OFF';
     dom.buttons.explicitToggle.textContent = state.filters.explicit ? 'ON' : 'OFF';
-    dom.buttons.skipTitleToggle.textContent = state.skipTitle ? 'ON' : 'OFF';
+    dom.buttons.newTabToggle.textContent = state.newTabMode ? 'ON' : 'OFF';
+    dom.buttons.secondsToggle.textContent = state.showSeconds ? 'ON' : 'OFF';
+
+    // Update Seconds Toggle Availability
+    if (!state.newTabMode) dom.rows.seconds.classList.add('disabled');
 
     if (window.AnnotationsSystem) {
         window.AnnotationsSystem.init();
@@ -214,7 +312,8 @@ function init() {
     dom.buttons.skip.addEventListener('click', exitJourney); 
     dom.buttons.titleToggle.addEventListener('click', toggleTitles);
     dom.buttons.explicitToggle.addEventListener('click', toggleExplicit);
-    dom.buttons.skipTitleToggle.addEventListener('click', toggleSkipTitle);
+    dom.buttons.newTabToggle.addEventListener('click', toggleNewTabMode);
+    dom.buttons.secondsToggle.addEventListener('click', toggleSeconds);
 
     document.getElementById('btn-add-note').addEventListener('click', () => window.AnnotationsSystem.createNote());
     document.getElementById('btn-lists').addEventListener('click', () => { openLists(); toggleOverlay('lists', true); });
@@ -268,25 +367,6 @@ function init() {
         }
     });
 
-    // Filter Buttons
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            btn.blur(); 
-            const type = btn.dataset.type;
-            const nextState = { ...state.filters, [type]: !state.filters[type] };
-            const anyCoreOn = nextState.barcode || nextState.current || nextState.geode;
-            const journeyOn = nextState.journey;
-            if (!anyCoreOn && !journeyOn) return;
-            state.filters[type] = !state.filters[type];
-            btn.classList.toggle('active', state.filters[type]);
-            localStorage.setItem('unicoda_filters', JSON.stringify(state.filters));
-        });
-    });
-
-    // Tabs
-    document.getElementById('tab-visited').addEventListener('click', () => switchListTab('visited'));
-    document.getElementById('tab-favorites').addEventListener('click', () => switchListTab('favorites'));
-
     // Inputs
     document.addEventListener('keydown', (e) => {
         if (document.body.classList.contains('ui-locked')) return;
@@ -310,9 +390,12 @@ function init() {
     });
 
     // STARTUP LOGIC
-    if (state.skipTitle) {
-        handleStart(true); // SKIP LOADER ON STARTUP
+    if (state.newTabMode) {
+        document.title = "New Tab"; // Set title for new tab mode
+        handleStart(true); 
+        ClockSystem.start(); 
     } else {
+        document.title = "UNICODA"; // Reset title
         switchScreen('title');
         startMainTitleAnimation();
     }
@@ -447,6 +530,27 @@ function updateTheme() {
     
     if (attr) document.documentElement.setAttribute('data-theme', attr);
     else document.documentElement.removeAttribute('data-theme');
+    
+    updateFavicon();
+}
+
+function updateFavicon() {
+    const link = document.getElementById('app-favicon');
+    if (!link) return;
+
+    // Configuration for Dark vs Light
+    // Dark Mode: Dark Box (#1a1a1a), Light Text (#d4d4d4)
+    // Light Mode: Light Box (#d4d4d4), Dark Text (#1a1a1a)
+    
+    const isLight = state.themeMode === 'light';
+    const bgColor = isLight ? '%23d4d4d4' : '%231a1a1a';
+    const textColor = isLight ? '%231a1a1a' : '%23d4d4d4';
+    
+    // Centered SVG with dominant-baseline='central'
+    // Shifted x to 29
+    const svg = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cstyle%3E text %7B font-family: monospace; font-weight: bold; font-size: 42px; fill: ${textColor}; %7D %3C/style%3E%3Crect width='64' height='64' rx='8' fill='${bgColor}'/%3E%3Ctext x='29' y='32' dominant-baseline='central' text-anchor='middle'%3E❖%3C/text%3E%3C/svg%3E`;
+    
+    link.href = svg;
 }
 
 // --- BACKDROP LOGIC ---
@@ -494,12 +598,32 @@ function toggleTitles() {
     else dom.title.classList.add('hidden');
 }
 
-// --- SKIPPING TITLE SCREEN LOGIC ---
+// --- NEW TAB MODE LOGIC ---
 
-function toggleSkipTitle() {
-    state.skipTitle = !state.skipTitle;
-    localStorage.setItem('unicoda_skip_title', state.skipTitle);
-    dom.buttons.skipTitleToggle.textContent = state.skipTitle ? 'ON' : 'OFF';
+function toggleNewTabMode() {
+    state.newTabMode = !state.newTabMode;
+    localStorage.setItem('unicoda_new_tab_mode', state.newTabMode);
+    dom.buttons.newTabToggle.textContent = state.newTabMode ? 'ON' : 'OFF';
+    
+    // Update Title
+    document.title = state.newTabMode ? "New Tab" : "UNICODA";
+    
+    if (state.newTabMode) {
+        ClockSystem.start();
+        dom.rows.seconds.classList.remove('disabled');
+    } else {
+        ClockSystem.stop();
+        dom.rows.seconds.classList.add('disabled');
+    }
+}
+
+function toggleSeconds() {
+    state.showSeconds = !state.showSeconds;
+    localStorage.setItem('unicoda_show_seconds', state.showSeconds);
+    dom.buttons.secondsToggle.textContent = state.showSeconds ? 'ON' : 'OFF';
+    
+    // Force immediate update to redraw the clock structure
+    if (state.newTabMode) ClockSystem.tick(true);
 }
 
 // --- EXPLICIT LOGIC ---
