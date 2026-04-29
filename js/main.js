@@ -275,6 +275,39 @@ const AboutAnimation = {
     }
 };
 
+// --- FULLSCREEN & ORIENTATION LOGIC ---
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().then(() => {
+            // Android: Automatically force rotation to landscape
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch(e => console.log('Orientation lock unsupported:', e));
+            }
+        }).catch(err => console.log(`Fullscreen unsupported: ${err.message}`));
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    }
+}
+
+document.addEventListener('fullscreenchange', () => {
+    const fsBtn = document.getElementById('btn-fullscreen');
+    if (!fsBtn) return;
+    
+    if (document.fullscreenElement) {
+        fsBtn.textContent = '✕';
+        fsBtn.dataset.tooltip = 'Exit Fullscreen';
+    } else {
+        fsBtn.textContent = '⛶';
+        fsBtn.dataset.tooltip = 'Fullscreen';
+        // Release the orientation lock when leaving fullscreen
+        if (screen.orientation && screen.orientation.unlock) {
+            screen.orientation.unlock();
+        }
+    }
+});
+
 // --- INITIALIZATION ---
     
 function init() {
@@ -470,30 +503,102 @@ function init() {
         });
     });
 
-    // --- LANDSCAPE PROMPT ---
+    // --- SMART MOBILE PROMPT & FULLSCREEN ---
     const landscapePrompt = document.getElementById('landscape-prompt');
-    const mqlPortrait = window.matchMedia('(max-width: 1024px) and (orientation: portrait) and (pointer: coarse)');
+    const promptText = document.querySelector('.landscape-prompt-text');
+    const promptBtn = document.getElementById('btn-prompt-fullscreen');
+    const promptIcon = document.querySelector('.landscape-prompt-icon');
+    const isMobile = window.matchMedia('(max-width: 1024px) and (pointer: coarse)');
 
-    function handleOrientationChange(e) {
-        if (landscapePrompt) {
-            if (e.matches) {
-                landscapePrompt.style.display = 'flex';
+    // 1. Detect iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+    // 2. Fullscreen Actions
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().then(() => {
+                if (screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('landscape').catch(() => {
+                        evaluatePrompt(); 
+                    });
+                }
+            }).catch(err => console.log(`Fullscreen unsupported: ${err.message}`));
+        } else {
+            if (document.exitFullscreen) document.exitFullscreen();
+        }
+    }
+
+    if (promptBtn) promptBtn.addEventListener('click', toggleFullscreen);
+
+    document.addEventListener('fullscreenchange', () => {
+        const fsBtn = document.getElementById('btn-fullscreen');
+        if (fsBtn) {
+            if (document.fullscreenElement) {
+                fsBtn.textContent = '✕';
+                fsBtn.dataset.tooltip = 'Exit Fullscreen';
             } else {
-                landscapePrompt.style.display = 'none';
+                fsBtn.textContent = '⛶';
+                fsBtn.dataset.tooltip = 'Fullscreen';
+                if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
+            }
+        }
+        evaluatePrompt();
+    });
+
+    // 3. Logic Matrix for the Prompt
+    function evaluatePrompt() {
+        if (!landscapePrompt) return;
+
+        if (!isMobile.matches) {
+            landscapePrompt.classList.add('hidden');
+            document.body.classList.remove('prompt-active');
+            return;
+        }
+
+        const isPortrait = window.innerHeight > window.innerWidth;
+        const isFS = !!document.fullscreenElement;
+
+        if (isIOS) {
+            // iOS: No fullscreen. Demand rotation.
+            if (isPortrait) {
+                landscapePrompt.classList.remove('hidden');
+                document.body.classList.add('prompt-active');
+                if (promptIcon) { promptIcon.textContent = '◐'; promptIcon.classList.add('rotating'); }
+                if (promptText) promptText.textContent = "Please rotate your device to landscape for the best experience.";
+                if (promptBtn) promptBtn.style.display = 'none';
+            } else {
+                landscapePrompt.classList.add('hidden');
+                document.body.classList.remove('prompt-active');
+            }
+        } else {
+            // Android: Demand Fullscreen first, then check orientation.
+            if (!isFS) {
+                landscapePrompt.classList.remove('hidden');
+                document.body.classList.add('prompt-active');
+                if (promptIcon) { promptIcon.textContent = '⛶'; promptIcon.classList.remove('rotating'); }
+                if (promptText) promptText.textContent = "Please enter fullscreen for the best experience.";
+                if (promptBtn) promptBtn.style.display = 'block';
+            } else if (isPortrait) {
+                landscapePrompt.classList.remove('hidden');
+                document.body.classList.add('prompt-active');
+                if (promptIcon) { promptIcon.textContent = '◐'; promptIcon.classList.add('rotating'); }
+                if (promptText) promptText.textContent = "Please rotate your device to landscape for the best experience.";
+                if (promptBtn) promptBtn.style.display = 'none';
+            } else {
+                landscapePrompt.classList.add('hidden');
+                document.body.classList.remove('prompt-active');
             }
         }
     }
 
-    mqlPortrait.addEventListener('change', handleOrientationChange);
-    handleOrientationChange(mqlPortrait);
+    window.addEventListener('resize', evaluatePrompt);
+    evaluatePrompt(); // Run once on boot
 
     // --- TOUCH TOOLTIPS (MOBILE) ---
-    const isMobile = window.matchMedia('(max-width: 1024px) and (pointer: coarse)');
-
     function initMobileTooltips() {
         let tooltipShownFor = null;
         let nextClickAction = null;
-        const learnedButtons = new Set(); // Memory for buttons that shouldn't need a double tap anymore
+        const learnedButtons = new Set(); 
 
         const tooltipActions = {
             'nav-forward':          () => typeof goForward === 'function' && goForward(),
@@ -517,13 +622,13 @@ function init() {
             'toggle-explicit':      () => typeof toggleExplicit === 'function' && toggleExplicit(),
             'toggle-new-tab':       () => typeof toggleNewTabMode === 'function' && toggleNewTabMode(),
             'toggle-show-seconds':  () => typeof toggleSeconds === 'function' && toggleSeconds(),
+            'btn-fullscreen':       () => typeof toggleFullscreen === 'function' && toggleFullscreen()
         };
-        
+
         function positionTooltip(btn) {
             const text = btn.dataset.tooltip;
             dom.tooltip.innerHTML = text;
             
-            // Unhide temporarily to measure its rendered width
             dom.tooltip.classList.remove('hidden');
             dom.tooltip.classList.add('visible');
 
@@ -533,7 +638,6 @@ function init() {
             
             let centerX = rect.left + (rect.width / 2);
 
-            // Bounding logic to keep it on-screen
             if (centerX - (tipRect.width / 2) < 10) {
                 centerX = (tipRect.width / 2) + 10;
             } else if (centerX + (tipRect.width / 2) > viewW - 10) {
@@ -569,10 +673,16 @@ function init() {
                 return;
             }
 
-            // Buttons that only require a tooltip on the first ever tap
+            // === BYPASS DOUBLE-TAP FOR FULLSCREEN ===
+            if (btn.id === 'btn-fullscreen') {
+                e.stopImmediatePropagation();
+                hideTooltip();
+                if (tooltipActions[btn.id]) tooltipActions[btn.id]();
+                return;
+            }
+
             const isLearnable = ['nav-back', 'nav-forward', 'nav-skip', 'toggle-theme-mobile', 'btn-backdrop-mobile'].includes(btn.id);
 
-            // Fast-track: If it's a learnable button and we already learned it, skip tooltip!
             if (isLearnable && learnedButtons.has(btn.id)) {
                 e.stopImmediatePropagation();
                 hideTooltip();
@@ -585,7 +695,6 @@ function init() {
                 if (nextClickAction) {
                     nextClickAction();
                     nextClickAction = null;
-                    // Mark button as learned so it only requires a single tap next time
                     if (isLearnable) learnedButtons.add(btn.id);
                 }
                 hideTooltip();
@@ -632,7 +741,7 @@ function init() {
             initMobileTooltips();
         }
     });
-
+    
     // Inputs
     document.addEventListener('keydown', (e) => {
         if (document.body.classList.contains('ui-locked')) return;

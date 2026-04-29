@@ -56,11 +56,13 @@
     <!-- Mobile Landscape Prompt -->
     <div id="landscape-prompt" class="hidden">
         <div class="landscape-prompt-content">
-            <span class="landscape-prompt-icon">◐</span>
-            <span class="landscape-prompt-text">Please rotate your device to landscape for the best experience.</span>
+            <!-- JS will inject ⛶ or ◐ here -->
+            <span class="landscape-prompt-icon"></span>
+            <span class="landscape-prompt-text"></span>
+            <button id="btn-prompt-fullscreen" class="text-btn" style="margin-top: 1rem; border: 1px solid var(--dim-color); padding: 0.5rem 1rem;">ENTER FULLSCREEN</button>
         </div>
     </div>
-
+    
     <!-- Post-it Notes Layer -->
     <div id="notes-layer"></div>
 
@@ -86,15 +88,17 @@
             </div>
         </div>
 
-    <!-- GLOBAL UI: Top Right (Menus & Note) -->
+        <!-- GLOBAL UI: Top Right (Menus & Note) -->
         <div class="ui-corner top-right" style="display: flex; gap: 1rem; align-items: center;">
              <button id="btn-add-note" class="icon-btn" data-tooltip="Add Note">+</button>
              <span class="separator">|</span>
              <button id="btn-lists" class="icon-btn" data-tooltip="Lists">☰</button>
              <button id="btn-settings" class="icon-btn" data-tooltip="Settings">⚙</button>
-             <span class="separator">|</span>
+             <span class="separator" id="sep-fs">|</span>
+             <button id="btn-fullscreen" class="icon-btn" data-tooltip="Fullscreen">⛶</button>
+             <span class="separator" id="sep-home">|</span>
              <button id="nav-home" class="icon-btn" data-tooltip="Title<br>Screen">⌂</button>
-            </div>
+        </div>
 
         <!-- PERMANENT CLOCK DISPLAY -->
         <div id="clock-display" class="hidden"></div>

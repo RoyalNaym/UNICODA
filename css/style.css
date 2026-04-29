@@ -124,6 +124,11 @@ body {
     100% { opacity: 1; }
 }
 
+/* Hide Fullscreen button on Desktop globally */
+#sep-fs, #btn-fullscreen {
+    display: none !important;
+}
+
 /* --- Settings Menu Structural Helpers --- */
 .mobile-setting { display: none !important; }
 .settings-mobile-layout { display: contents; }
@@ -1246,66 +1251,101 @@ input[type=range]::-moz-range-thumb {
 }
 
 /* ==========================================
-   MOBILE RESPONSIVENESS - LANDSCAPE MINIMUM
+   MOBILE RESPONSIVENESS & PROMPT STYLES
    ========================================== */
 
-/* --- Portrait Touch Devices: Block with prompt --- */
-@media (max-width: 1024px) and (orientation: portrait) and (pointer: coarse) {
-    html, body {
-        overflow: hidden;
-        height: 100%;
-    }
+/* --- Mobile Prompt --- */
+body.prompt-active {
+    overflow: hidden !important;
+    height: 100vh !important;
+    width: 100vw !important;
+}
 
-    #landscape-prompt {
-        display: flex;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 9999;
-        background: var(--bg-color);
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        pointer-events: all;
-    }
+#landscape-prompt {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    background: var(--bg-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    pointer-events: all;
+}
 
-    .landscape-prompt-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1.5rem;
-        text-align: center;
-        padding: 2rem;
-        max-width: 300px;
-    }
+#landscape-prompt.hidden {
+    display: none !important;
+}
 
-    .landscape-prompt-icon {
-        font-size: 4rem;
-        color: var(--dim-color);
-        display: inline-block;
-        transform-origin: center center;
-        will-change: transform;
-        animation: promptRotate 2.5s ease-in-out infinite;
-    }
+.landscape-prompt-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    text-align: center;
+    padding: 2rem;
+    max-width: 300px;
+}
 
-    @keyframes promptRotate {
-        0%, 100% { transform: rotate(0deg); }
-        50% { transform: rotate(90deg); }
-    }
+.landscape-prompt-icon {
+    font-size: 4rem;
+    color: var(--dim-color);
+    display: inline-block;
+    line-height: 1;
+    transform-origin: center center;
+    will-change: transform;
+}
 
-    .landscape-prompt-text {
-        font-size: 1rem;
-        color: var(--accent-color);
-        line-height: 1.6;
-        letter-spacing: 0.05em;
-    }
+.landscape-prompt-icon.rotating {
+    animation: promptRotate 2.5s ease-in-out infinite;
+}
 
-    #app, #ascii-backdrop, #notes-layer {
-        opacity: 0;
-        pointer-events: none;
-    }
+@keyframes promptRotate {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(90deg); }
+}
+
+.landscape-prompt-text {
+    font-size: 1rem;
+    color: var(--accent-color);
+    line-height: 1.6;
+    letter-spacing: 0.05em;
+}
+
+body.prompt-active #app, 
+body.prompt-active #ascii-backdrop, 
+body.prompt-active #notes-layer {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Only rotate if JS adds this class */
+.landscape-prompt-icon.rotating {
+    animation: promptRotate 2.5s ease-in-out infinite;
+}
+
+@keyframes promptRotate {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(90deg); }
+}
+
+.landscape-prompt-text {
+    font-size: 1rem;
+    color: var(--accent-color);
+    line-height: 1.6;
+    letter-spacing: 0.05em;
+}
+
+/* Hide the rest of the app when prompt is active */
+body.prompt-active #app, 
+body.prompt-active #ascii-backdrop, 
+body.prompt-active #notes-layer {
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* --- Hide filters on title screen --- */
@@ -1320,13 +1360,21 @@ input[type=range]::-moz-range-thumb {
         display: none;
     }
 
-    /* Top-right buttons: keep only Settings */
+    /* Top-right buttons: keep Settings and Fullscreen on mobile */
     #btn-add-note,
     #btn-add-note + .separator,
     #btn-lists,
-    #btn-settings + .separator,
+    #sep-home,
     #nav-home {
-        display: none;
+        display: none !important;
+    }
+
+    #sep-fs {
+        display: inline-block !important;
+    }
+
+    #btn-fullscreen {
+        display: inline-flex !important;
     }
 
     /* Favorites button */
