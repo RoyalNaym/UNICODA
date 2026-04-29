@@ -221,7 +221,11 @@ class AsciiBackdrop {
         this.fontSize = 14; 
         this.speed = 8; 
         
-        window.addEventListener('resize', () => { if (this.active) this.render(); });
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => { if (this.active) this.render(); }, 500);
+        });
     }
 
     start(pattern = null) {

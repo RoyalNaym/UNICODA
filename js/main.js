@@ -369,6 +369,10 @@ function init() {
     dom.buttons.newTabToggle.addEventListener('click', toggleNewTabMode);
     dom.buttons.secondsToggle.addEventListener('click', toggleSeconds);
 
+    // --- New mobile settings buttons ---
+    document.getElementById('toggle-theme-mobile').addEventListener('click', toggleThemeMode);
+    document.getElementById('btn-backdrop-mobile').addEventListener('click', cycleBackdrop);
+
     document.getElementById('btn-add-note').addEventListener('click', () => window.AnnotationsSystem.createNote());
     
     // List Overlay Buttons
@@ -409,9 +413,25 @@ function init() {
         const target = e.target.closest('[data-tooltip]');
         if (target) {
             const text = target.dataset.tooltip;
-            dom.tooltip.innerHTML = text; // Changed to innerHTML to support <br>
+            dom.tooltip.innerHTML = text; 
+            
+            // Unhide temporarily to measure its rendered width
+            dom.tooltip.classList.remove('hidden');
+            dom.tooltip.classList.add('visible');
+
             const rect = target.getBoundingClientRect();
-            const centerX = rect.left + (rect.width / 2);
+            const tipRect = dom.tooltip.getBoundingClientRect();
+            const viewW = window.innerWidth;
+            
+            let centerX = rect.left + (rect.width / 2);
+
+            // Bounding logic to keep it on-screen
+            if (centerX - (tipRect.width / 2) < 10) {
+                centerX = (tipRect.width / 2) + 10;
+            } else if (centerX + (tipRect.width / 2) > viewW - 10) {
+                centerX = viewW - (tipRect.width / 2) - 10;
+            }
+
             let top;
             const gap = 10;
             if (rect.top < 50) {
@@ -425,8 +445,6 @@ function init() {
             }
             dom.tooltip.style.left = `${centerX}px`;
             dom.tooltip.style.top = `${top}px`;
-            dom.tooltip.classList.remove('hidden');
-            dom.tooltip.classList.add('visible');
         }
     });
     document.body.addEventListener('mouseout', (e) => {
@@ -450,6 +468,169 @@ function init() {
             btn.classList.toggle('active', state.filters[type]);
             localStorage.setItem('unicoda_filters', JSON.stringify(state.filters));
         });
+    });
+
+    // --- LANDSCAPE PROMPT ---
+    const landscapePrompt = document.getElementById('landscape-prompt');
+    const mqlPortrait = window.matchMedia('(max-width: 1024px) and (orientation: portrait) and (pointer: coarse)');
+
+    function handleOrientationChange(e) {
+        if (landscapePrompt) {
+            if (e.matches) {
+                landscapePrompt.style.display = 'flex';
+            } else {
+                landscapePrompt.style.display = 'none';
+            }
+        }
+    }
+
+    mqlPortrait.addEventListener('change', handleOrientationChange);
+    handleOrientationChange(mqlPortrait);
+
+    // --- TOUCH TOOLTIPS (MOBILE) ---
+    const isMobile = window.matchMedia('(max-width: 1024px) and (pointer: coarse)');
+
+    function initMobileTooltips() {
+        let tooltipShownFor = null;
+        let nextClickAction = null;
+        const learnedButtons = new Set(); // Memory for buttons that shouldn't need a double tap anymore
+
+        const tooltipActions = {
+            'nav-forward':          () => typeof goForward === 'function' && goForward(),
+            'nav-back':             () => typeof goBack === 'function' && goBack(),
+            'nav-skip':             () => typeof exitJourney === 'function' && exitJourney(),
+            'nav-random':           () => typeof goTrueRandom === 'function' && goTrueRandom(),
+            'nav-fav':              () => typeof toggleFavorite === 'function' && toggleFavorite(),
+            'toggle-theme':         () => typeof toggleThemeMode === 'function' && toggleThemeMode(),
+            'toggle-theme-mobile':  () => typeof toggleThemeMode === 'function' && toggleThemeMode(),
+            'btn-backdrop':         () => typeof cycleBackdrop === 'function' && cycleBackdrop(),
+            'btn-backdrop-mobile':  () => typeof cycleBackdrop === 'function' && cycleBackdrop(),
+            'btn-settings':         () => typeof toggleOverlay === 'function' && toggleOverlay('settings', true),
+            'btn-about':            () => { if (typeof toggleOverlay === 'function') { toggleOverlay('about', true); if (typeof AboutAnimation !== 'undefined') AboutAnimation.start(); } },
+            'btn-close-about':      () => { if (typeof toggleOverlay === 'function') { toggleOverlay('about', false); if (typeof AboutAnimation !== 'undefined') AboutAnimation.stop(); } },
+            'btn-close-settings':   () => typeof toggleOverlay === 'function' && toggleOverlay('settings', false),
+            'btn-close-lists':      () => typeof toggleOverlay === 'function' && toggleOverlay('lists', false),
+            'btn-lists':            () => { if (typeof openLists === 'function') { openLists(); toggleOverlay('lists', true); } },
+            'btn-reset-intro':      () => { state.seenIntro = false; localStorage.setItem('unicoda_seen_intro', 'false'); },
+            'btn-clear-data':       () => { if (typeof AnnotationsSystem !== 'undefined') AnnotationsSystem.clearAllData(); localStorage.clear(); location.reload(); },
+            'toggle-titles':        () => typeof toggleTitles === 'function' && toggleTitles(),
+            'toggle-explicit':      () => typeof toggleExplicit === 'function' && toggleExplicit(),
+            'toggle-new-tab':       () => typeof toggleNewTabMode === 'function' && toggleNewTabMode(),
+            'toggle-show-seconds':  () => typeof toggleSeconds === 'function' && toggleSeconds(),
+        };
+        
+        function positionTooltip(btn) {
+            const text = btn.dataset.tooltip;
+            dom.tooltip.innerHTML = text;
+            
+            // Unhide temporarily to measure its rendered width
+            dom.tooltip.classList.remove('hidden');
+            dom.tooltip.classList.add('visible');
+
+            const rect = btn.getBoundingClientRect();
+            const tipRect = dom.tooltip.getBoundingClientRect();
+            const viewW = window.innerWidth;
+            
+            let centerX = rect.left + (rect.width / 2);
+
+            // Bounding logic to keep it on-screen
+            if (centerX - (tipRect.width / 2) < 10) {
+                centerX = (tipRect.width / 2) + 10;
+            } else if (centerX + (tipRect.width / 2) > viewW - 10) {
+                centerX = viewW - (tipRect.width / 2) - 10;
+            }
+
+            const gap = 10;
+            if (rect.top < 50) {
+                dom.tooltip.style.transform = 'translate(-50%, 0)';
+                dom.tooltip.style.marginTop = `${gap}px`;
+                dom.tooltip.style.top = `${rect.bottom}px`;
+            } else {
+                dom.tooltip.style.transform = 'translate(-50%, -100%)';
+                dom.tooltip.style.marginTop = `-${gap}px`;
+                dom.tooltip.style.top = `${rect.top}px`;
+            }
+            dom.tooltip.style.left = `${centerX}px`;
+        }
+
+        function hideTooltip() {
+            dom.tooltip.classList.remove('visible');
+            dom.tooltip.classList.add('hidden');
+            tooltipShownFor = null;
+            nextClickAction = null;
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!isMobile.matches) return;
+
+            const btn = e.target.closest('[data-tooltip]');
+            if (!btn) {
+                hideTooltip();
+                return;
+            }
+
+            // Buttons that only require a tooltip on the first ever tap
+            const isLearnable = ['nav-back', 'nav-forward', 'nav-skip', 'toggle-theme-mobile', 'btn-backdrop-mobile'].includes(btn.id);
+
+            // Fast-track: If it's a learnable button and we already learned it, skip tooltip!
+            if (isLearnable && learnedButtons.has(btn.id)) {
+                e.stopImmediatePropagation();
+                hideTooltip();
+                if (tooltipActions[btn.id]) tooltipActions[btn.id]();
+                return;
+            }
+
+            if (tooltipShownFor === btn) {
+                e.stopImmediatePropagation();
+                if (nextClickAction) {
+                    nextClickAction();
+                    nextClickAction = null;
+                    // Mark button as learned so it only requires a single tap next time
+                    if (isLearnable) learnedButtons.add(btn.id);
+                }
+                hideTooltip();
+                return;
+            }
+
+            e.stopImmediatePropagation();
+
+            if (tooltipShownFor) {
+                dom.tooltip.classList.remove('visible');
+            }
+
+            tooltipShownFor = btn;
+            positionTooltip(btn);
+
+            if (tooltipActions[btn.id]) {
+                nextClickAction = tooltipActions[btn.id];
+            } else if (btn.classList.contains('filter-btn') && btn.dataset.type) {
+                const type = btn.dataset.type;
+                nextClickAction = () => {
+                    state.filters[type] = !state.filters[type];
+                    btn.classList.toggle('active', state.filters[type]);
+                    localStorage.setItem('unicoda_filters', JSON.stringify(state.filters));
+                };
+            } else {
+                nextClickAction = null;
+            }
+        }, true);
+
+        document.addEventListener('click', () => {
+            if (tooltipShownFor) {
+                dom.tooltip.classList.remove('visible');
+                dom.tooltip.classList.add('hidden');
+                tooltipShownFor = null;
+            }
+        });
+
+        document.body.setAttribute('data-tooltip-mobile', 'true');
+    }
+
+    if (isMobile.matches) initMobileTooltips();
+    isMobile.addEventListener('change', (e) => {
+        if (e.matches && !document.body.hasAttribute('data-tooltip-mobile')) {
+            initMobileTooltips();
+        }
     });
 
     // Inputs
@@ -654,8 +835,16 @@ function updateBackdropState() {
     const icons = ["█", "▓", "▒", "░", "∅"];
     const percentages = ["100%", "50%", "25%", "12%", "0%"];
     
+    // Update Desktop Button
     dom.buttons.backdrop.textContent = icons[state.backdropIndex];
     dom.buttons.backdrop.dataset.tooltip = `Backdrop: ${percentages[state.backdropIndex]}`;
+    
+    // Update Mobile Button (if it exists)
+    const mobileBackdropBtn = document.getElementById('btn-backdrop-mobile');
+    if (mobileBackdropBtn) {
+        mobileBackdropBtn.textContent = icons[state.backdropIndex];
+        mobileBackdropBtn.dataset.tooltip = `Backdrop: ${percentages[state.backdropIndex]}`;
+    }
     
     // Update live tooltip if it is visible
     if(dom.tooltip.classList.contains('visible') && dom.tooltip.textContent.startsWith("Backdrop:")) {
@@ -1070,6 +1259,52 @@ const Scrambler = {
     }
 };
 
+function sizeForMobile(piece) {
+    const display = dom.display;
+    
+    // Reset any previous mobile styles so they don't bleed into desktop
+    display.style.fontSize = '';
+    display.style.whiteSpace = '';
+    display.style.wordBreak = '';
+
+    if (window.matchMedia('(pointer: coarse)').matches === false) return;
+    if (window.innerWidth > 1024) return;
+
+    const viewW = window.innerWidth;
+    const viewH = window.innerHeight;
+
+    const maxW = viewW - 120;
+    // INCREASED PADDING: Leave 200px of vertical space to ensure the title fits above the footer
+    const maxH = viewH - 200; 
+
+    // Set reference size for accurate measurement
+    const refSize = 16;
+    display.style.fontSize = refSize + 'px';
+    display.style.whiteSpace = 'pre';
+    
+    const refW = display.scrollWidth;
+    const refH = display.scrollHeight;
+
+    if (piece.type === 'geode') {
+        // Geodes: scale to fit height
+        let size = Math.floor((maxH / refH) * refSize);
+        size = Math.min(size, 36);
+        size = Math.max(size, 14);
+        display.style.fontSize = size + 'px';
+    } else {
+        // Barcodes & Currents: scale to fit width, allow wrapping if needed
+        let size = Math.floor((maxW / refW) * refSize);
+        size = Math.min(size, 36);
+        size = Math.max(size, 14);
+
+        if (refW * (size / refSize) > maxW) {
+            display.style.whiteSpace = 'pre-wrap';
+            display.style.wordBreak = 'break-all';
+        }
+        display.style.fontSize = size + 'px';
+    }
+}
+
 function displayPiece(piece) {
     const display = dom.display;
 
@@ -1086,15 +1321,20 @@ function displayPiece(piece) {
         dom.buttons.aiInd.classList.remove('visible');
     }
 
-    // Ghost Measure: Use min-width/height in pixels for stability without breaking responsiveness
+    // Ghost Measure Phase
     display.style.opacity = '0';
-    display.textContent = piece.content;
-    // Reset any previous fixed dimensions
+    display.textContent = piece.content; // Insert text
+    
+    // Reset dimensional locks
     display.style.width = 'auto'; 
     display.style.height = 'auto';
     display.style.minWidth = '0';
     display.style.minHeight = '0';
     
+    // 1. SCALE FOR MOBILE FIRST
+    sizeForMobile(piece);
+    
+    // 2. NOW MEASURE THE SCALED TEXT
     const rect = display.getBoundingClientRect();
     
     // Set minimums to prevent shrinkage during animation
@@ -1104,6 +1344,7 @@ function displayPiece(piece) {
     // Position title container dynamically based on measured content height
     dom.titleContainer.style.top = `calc(50% + ${rect.height / 2}px + 2.5rem)`;
     
+    // 3. CLEAR TEXT FOR ANIMATION (if needed)
     if (piece.type !== 'barcode') {
         display.textContent = ''; 
     }
@@ -1264,6 +1505,9 @@ function renderIntro() {
     const introContent = document.getElementById('intro-content');
     const step = INTRO_DATA[state.introStep];
     
+    // Tag the container with the current step number so mobile CSS can target specific screens
+    introContent.dataset.step = state.introStep;
+
     introContent.innerHTML = ''; // Clear previous content
     
     let exampleData = null;
@@ -1279,13 +1523,20 @@ function renderIntro() {
             const textDiv = document.createElement('div');
             textDiv.className = 'intro-text';
             
-            const html = part.text
-                .replace(/\n/g, '<br>')
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                .replace(/%\{(.*?)\}%/g, '<span class="intro-link">$1</span>');
+            // Format into proper paragraphs to prevent awkward column breaks
+            const formattedText = part.text
+                .split('\n\n') // Split by double newlines to isolate paragraphs
+                .map(p => {
+                    const parsed = p
+                        .replace(/\n/g, '<br>') // Keep single newlines as breaks inside the paragraph
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                        .replace(/%\{(.*?)\}%/g, '<span class="intro-link">$1</span>');
+                    return `<p>${parsed}</p>`;
+                })
+                .join('');
 
-            textDiv.innerHTML = html;
+            textDiv.innerHTML = formattedText;
             introContent.appendChild(textDiv);
         } else if (part.type === 'example') {
             exampleContainer = document.createElement('div');

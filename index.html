@@ -53,6 +53,14 @@
     <!-- ASCII Background Layer -->
     <pre id="ascii-backdrop"></pre>
 
+    <!-- Mobile Landscape Prompt -->
+    <div id="landscape-prompt" class="hidden">
+        <div class="landscape-prompt-content">
+            <span class="landscape-prompt-icon">◐</span>
+            <span class="landscape-prompt-text">Please rotate your device to landscape for the best experience.</span>
+        </div>
+    </div>
+
     <!-- Post-it Notes Layer -->
     <div id="notes-layer"></div>
 
@@ -204,7 +212,7 @@
             <!-- Center Navigation (Hidden on Title Screen via CSS) -->
             <div class="footer-center">
                 <!-- AI Indicator (Symmetric to Skip) -->
-                <div id="ai-indicator" class="status-indicator icon-btn" data-tooltip="AI Generated">⎔</div>
+                <div id="ai-indicator" class="icon-btn" data-tooltip="AI Generated">⎔</div>
                 
                 <button id="nav-back" class="nav-btn icon-btn" data-tooltip="Back">←</button>
                 <!-- Random Button -->
@@ -224,50 +232,59 @@
         <div id="settings-menu" class="overlay hidden">
             <div class="overlay-content settings-list">
                 
-                <div class="setting-row">
-                    <span>TEXT SIZE</span>
-                    <!-- 8 Steps (1 to 8) -->
-                    <input type="range" id="slider-text-size" min="1" max="8" step="1" value="4">
-                </div>
+                <div class="settings-mobile-layout">
+                    <!-- Left Side (Mobile) / Full (Desktop) -->
+                    <div class="settings-left">
+                        <div class="setting-row">
+                             <span>DATA</span>
+                            <button id="btn-clear-data" class="text-btn danger">CLEAR ALL</button>
+                        </div>
+                        <div class="setting-row">
+                            <span>INTRO</span>
+                            <button id="btn-reset-intro" class="text-btn">RESET</button>
+                        </div>
+                        <div class="setting-row">
+                            <span>TITLES</span>
+                            <button id="toggle-titles" class="text-btn">ON</button>
+                        </div>
 
-                <div class="setting-row note-size-row">
-                    <span>NOTE SIZE</span>
-                    <!-- 1=Small, 2=Medium, 3=Big -->
-                    <input type="range" id="slider-note-size" min="1" max="3" step="1" value="2">
-                </div>
+                        <!-- Hidden on Mobile -->
+                        <div class="setting-row desktop-setting">
+                            <span>TEXT SIZE</span>
+                            <input type="range" id="slider-text-size" min="1" max="8" step="1" value="4">
+                        </div>
+                        <div class="setting-row note-size-row desktop-setting">
+                            <span>NOTE SIZE</span>
+                            <input type="range" id="slider-note-size" min="1" max="3" step="1" value="2">
+                        </div>
+                        <div class="setting-row desktop-setting">
+                            <span>EXPLICIT</span>
+                            <button id="toggle-explicit" class="text-btn">OFF</button>
+                        </div>
+                        <div class="setting-row desktop-setting">
+                            <span>NEW TAB MODE</span>
+                            <button id="toggle-new-tab" class="text-btn">OFF</button>
+                        </div>
+                        <div id="row-show-seconds" class="setting-row desktop-setting">
+                            <span>SHOW SECONDS</span>
+                            <button id="toggle-show-seconds" class="text-btn">ON</button>
+                        </div>
+                    </div>
 
-                <div class="setting-row">
-                    <span>TITLES</span>
-                    <button id="toggle-titles" class="text-btn">ON</button>
-                </div>
+                    <!-- Divider (Mobile Only) -->
+                    <div class="settings-divider mobile-setting"></div>
 
-                <div class="setting-row">
-                    <span>EXPLICIT</span>
-                    <button id="toggle-explicit" class="text-btn">OFF</button>
+                    <!-- Right Side Icons (Mobile Only) -->
+                    <div class="settings-right mobile-setting">
+                        <button id="toggle-theme-mobile" class="icon-btn" data-tooltip="Theme">◑</button>
+                        <button id="btn-backdrop-mobile" class="icon-btn" data-tooltip="Backdrop Density">▓</button>
+                    </div>
                 </div>
-
-                <div class="setting-row">
-                    <span>NEW TAB MODE</span>
-                    <button id="toggle-new-tab" class="text-btn">OFF</button>
-                </div>
-
-                <div id="row-show-seconds" class="setting-row">
-                    <span>SHOW SECONDS</span>
-                    <button id="toggle-show-seconds" class="text-btn">ON</button>
-                </div>
-
-                <div class="setting-row">
-                    <span>INTRO</span>
-                    <button id="btn-reset-intro" class="text-btn">RESET</button>
-                </div>
-                <div class="setting-row">
-                     <span>DATA</span>
-                    <button id="btn-clear-data" class="text-btn danger">CLEAR ALL</button>
-                </div>
+                
                 <button id="btn-close-settings" class="text-btn" style="margin-top: 2rem;">CLOSE</button>
             </div>
         </div>
-        
+                
         <!-- List Overlay -->
         <div id="list-menu" class="overlay hidden">
              <div class="overlay-content" style="width: 500px;">
@@ -288,4 +305,4 @@
     <script src="js/annotations.js"></script>
     <script src="js/main.js"></script>
 </body>
-</html> 
+</html>
