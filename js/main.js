@@ -441,14 +441,16 @@ function init() {
         location.reload();
     });
 
-    // Tooltips
+    // Tooltips (Desktop)
     document.body.addEventListener('mouseover', (e) => {
+        // Bulletproof guard: if mobile touch system is active, abort entirely!
+        if (document.body.hasAttribute('data-tooltip-mobile')) return;
+
         const target = e.target.closest('[data-tooltip]');
         if (target) {
             const text = target.dataset.tooltip;
             dom.tooltip.innerHTML = text; 
             
-            // Unhide temporarily to measure its rendered width
             dom.tooltip.classList.remove('hidden');
             dom.tooltip.classList.add('visible');
 
@@ -458,7 +460,6 @@ function init() {
             
             let centerX = rect.left + (rect.width / 2);
 
-            // Bounding logic to keep it on-screen
             if (centerX - (tipRect.width / 2) < 10) {
                 centerX = (tipRect.width / 2) + 10;
             } else if (centerX + (tipRect.width / 2) > viewW - 10) {
@@ -480,7 +481,10 @@ function init() {
             dom.tooltip.style.top = `${top}px`;
         }
     });
+
     document.body.addEventListener('mouseout', (e) => {
+        if (document.body.hasAttribute('data-tooltip-mobile')) return;
+
         const target = e.target.closest('[data-tooltip]');
         if (target) {
             dom.tooltip.classList.remove('visible');
@@ -673,26 +677,22 @@ function init() {
                 return;
             }
 
-            // === BYPASS DOUBLE-TAP FOR FULLSCREEN ===
-            if (btn.id === 'btn-fullscreen') {
-                e.stopImmediatePropagation();
-                hideTooltip();
-                if (tooltipActions[btn.id]) tooltipActions[btn.id]();
-                return;
-            }
+            const isLearnable = ['nav-back', 'nav-forward', 'nav-skip', 'toggle-theme-mobile', 'btn-backdrop-mobile', 'btn-fullscreen'].includes(btn.id);
 
-            const isLearnable = ['nav-back', 'nav-forward', 'nav-skip', 'toggle-theme-mobile', 'btn-backdrop-mobile'].includes(btn.id);
-
+            // Fast-track for learned buttons
             if (isLearnable && learnedButtons.has(btn.id)) {
                 e.stopImmediatePropagation();
                 hideTooltip();
+                btn.blur(); // Drop focus so the browser doesn't think we're hovering
                 if (tooltipActions[btn.id]) tooltipActions[btn.id]();
                 return;
             }
 
+            // Second tap execution
             if (tooltipShownFor === btn) {
                 e.stopImmediatePropagation();
                 if (nextClickAction) {
+                    btn.blur(); // Drop focus
                     nextClickAction();
                     nextClickAction = null;
                     if (isLearnable) learnedButtons.add(btn.id);
@@ -701,6 +701,7 @@ function init() {
                 return;
             }
 
+            // First tap: Show tooltip
             e.stopImmediatePropagation();
 
             if (tooltipShownFor) {
@@ -715,6 +716,7 @@ function init() {
             } else if (btn.classList.contains('filter-btn') && btn.dataset.type) {
                 const type = btn.dataset.type;
                 nextClickAction = () => {
+                    btn.blur(); // Drop focus
                     state.filters[type] = !state.filters[type];
                     btn.classList.toggle('active', state.filters[type]);
                     localStorage.setItem('unicoda_filters', JSON.stringify(state.filters));
@@ -723,7 +725,7 @@ function init() {
                 nextClickAction = null;
             }
         }, true);
-
+        
         document.addEventListener('click', () => {
             if (tooltipShownFor) {
                 dom.tooltip.classList.remove('visible');
