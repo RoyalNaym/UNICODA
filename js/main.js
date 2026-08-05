@@ -1,4 +1,4 @@
-/**
+ /**
  * UNICODA Main Logic
  */
 
@@ -21,10 +21,18 @@ function parseFrontMatterItem(rawString, defaultType) {
     
     const title = headerLines[0] || "Untitled";
     const tagsStr = headerLines[1] || "";
-    const tags = tagsStr ? tagsStr.split(',').map(s => s.trim()) : [];
+    let tags = tagsStr ? tagsStr.split(',').map(s => s.trim()) : [];
+
+    // Check for explicit type declaration (e.g., "type:geode")
+    let finalType = defaultType;
+    const typeIndex = tags.findIndex(t => t.startsWith('type:'));
+    if (typeIndex !== -1) {
+        finalType = tags[typeIndex].split(':')[1].trim();
+        tags.splice(typeIndex, 1); // Remove the tag so it doesn't clutter the system
+    }
 
     return {
-        type: defaultType,
+        type: finalType,
         title: title,
         content: content,
         tags: tags,
@@ -34,20 +42,44 @@ function parseFrontMatterItem(rawString, defaultType) {
 
 Object.keys(JOURNEYS).forEach(key => {
     const j = JOURNEYS[key];
+    // Read the journey's requested default type, falling back to barcode
+    const baseType = j.defaultType || 'barcode';
+    
     j.sequence = j.sequence.map(item => {
-        // Assuming all journey sequence items are barcodes for now
-        return parseFrontMatterItem(item, 'barcode');
+        // parseFrontMatterItem will still override this baseType 
+        // if it finds a specific "type:geode" or "type:current" tag on the individual piece.
+        return parseFrontMatterItem(item, baseType);
     });
 });
 
+// FNV-1a 32-bit content hash. Stable across reorders and insertions;
+// only changes if a piece's title or content is edited.
+function hashPieceContent(str) {
+    let hash = 0x811c9dc5;
+    for (let i = 0; i < str.length; i++) {
+        hash ^= str.charCodeAt(i);
+        hash = Math.imul(hash, 0x01000193);
+    }
+    return (hash >>> 0).toString(16).padStart(8, '0');
+}
+
+const usedLibraryIds = new Set();
 const LIBRARY = [
     ...RAW_BARCODES.map(s => parseFrontMatterItem(s, 'barcode')),
     ...RAW_CURRENTS.map(s => parseFrontMatterItem(s, 'current')),
     ...RAW_GEODES.map(s => parseFrontMatterItem(s, 'geode'))
-].map((item, index) => ({
-    ...item,
-    id: `${item.type}-${index}` 
-}));
+].map(item => {
+    const baseId = `${item.type}-${hashPieceContent(item.title + '\n' + item.content)}`;
+    // Collision guard: practically unreachable at this scale, but guarantees unique ids
+    let id = baseId;
+    let suffix = 2;
+    while (usedLibraryIds.has(id)) {
+        id = `${baseId}-${suffix}`;
+        suffix++;
+    }
+    usedLibraryIds.add(id);
+    return { ...item, id };
+});
 
 Object.values(JOURNEYS).forEach(journey => {
     if (journey.sequence.length > 0) {

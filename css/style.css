@@ -1844,26 +1844,82 @@ body.prompt-active #notes-layer {
     }
 }
 
-/* --- Tablet and up: Intro two-column layout --- */
+/* --- Desktop: Intro layout mirrors the mobile data-step layouts --- */
 @media (min-width: 1025px) {
     #intro-content {
-        flex-direction: row;
-        align-items: flex-start;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
         gap: 3rem;
-        max-width: 860px;
+        max-width: 1100px;
         width: 90%;
+        text-align: center;
+    }
+
+    .intro-title {
+        width: 100%;
+        margin: 0;
+        text-align: center;
+    }
+
+    .intro-example {
+        display: flex;
+        justify-content: center;
+        width: 100% !important; /* Overrides the inline width set by renderIntro() so the pre centers */
+        margin: 0;
+    }
+
+    .intro-text {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        column-count: 2;
+        column-gap: 3rem;
         text-align: left;
     }
 
-    #intro-content > .intro-title,
-    #intro-content > .intro-text {
-        flex: 1;
-        min-width: 0;
+    .intro-text p {
+        margin-top: 0;
+        margin-bottom: 1.2rem;
     }
 
-    #intro-content > .intro-example {
-        flex: 0 0 auto;
-        align-self: flex-start;
+    .intro-text p:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Screens 1 and 5: keep paragraphs whole across the two columns */
+    #intro-content[data-step="0"] .intro-text p,
+    #intro-content[data-step="4"] .intro-text p {
+        break-inside: avoid;
+    }
+
+    /* Screen 2 (Barcodes): hide the "As you wander around..." transition text, same as mobile */
+    #intro-content[data-step="1"] > .intro-text:first-child {
+        display: none !important;
+    }
+
+    /* Screen 4 (Geodes): title spanning above, example left, text right */
+    #intro-content[data-step="3"] {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+        align-content: center;
+        align-items: center;
+    }
+
+    #intro-content[data-step="3"] .intro-title {
+        grid-column: 1 / -1;
+    }
+
+    #intro-content[data-step="3"] .intro-example {
+        grid-column: 1;
+        justify-content: flex-end;
+    }
+
+    #intro-content[data-step="3"] .intro-text {
+        grid-column: 2;
+        column-count: 1;
     }
 }
 

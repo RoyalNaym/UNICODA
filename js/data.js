@@ -151,6 +151,50 @@ Idiot sun
 Keyboard
 ---
 ░ ⦃⌗⌗⌗⦄ ▓ ⦃⌗⌗⌗⦄ ▓ ⦃⌗⌗⌗⦄ ▒ ↓○ → ⟨𖨆 ⟺ ⦿⟩ ▒ (◉‿◉)՞ ░▒ ⁇ ░
+`,
+`
+No more files to speak of. No more corruption on hold.
+---
+░ ⚹ ∅ ▒ ∴ ⟨🜔⟩ ( ⁻ ₋ ⁻ ̥ ) ▓█ ≣ ⟪ 🜇 ∉ ⌂ ⟫ █ ▓ ⏚ ░▒
+`,
+`
+My eyes are starting to cave in. My legs feel weak. My throat aches.
+---
+█ █▓▒ ⟨𖨆 ⟱ 🜃⟩ (｡•́ ᴖ •̀｡) ▓ ꙮ ⇢ ∅ ▒ ⌇ ⌁ ░ ∴ 🝰 ↔ ☾ ( ᴗ_ ᴗ ⁺ ) ░▒▓█
+`,
+`
+I wasn't kidding around.
+---
+█ █▓▒ ⟪ ⚡︎ ⟫ ⇏ ⟨ ᚹ ⟩ ( ಠ ⎗ ಠ ) ░▒▓█ ▓▒ ∴ ⟨ 🜍 ⟩ ≡ 𖤍 █
+`,
+`
+To have you here is great luck. Simple, brought to you by the most complex machine ever grown.
+ai
+---
+░ ▒ ⟨𖨆 ☌ ⦿⟩ ▓ ▒░ ⟪⚅ ∴ 🝰⟫ ▓ ░ ⟨◯⟩ ↬ █ █▓▒░ ⟪𖥧 ⧈ ꙮ ≣ 𐃭⟫ ╰(𖥧 ᴗ ꙮ)╯⟡ ░▒▓█ █ ▓ ▒ ░
+`,
+`
+I might be addicted to porn.
+explicit
+---
+░ ▒░ ⟨𖨆 ∈ ⍼⟩ ▓ █▓▒░ ⟪𓁷 ⟷ 🜍 ↻ ≡ ∅⟫ (⍜╭╮⍜)𓍢 ░▒▓█ █ ▓▒ ⦃𖨆 ⊄ ⍼⦄ ∴ 𖨆 ⤴ 𑁍 ░▒ ░
+`,
+`
+Hjinx
+explicit
+---
+░ ▒░ ⟨𖨆 ⟷ ⚹ ⟷ ♀⟩ (◉⟡◉)৴ ░▒▓ ▓ ▓▒░ ⟪♀ → ∅⟫ ∴ ⦃𖨆 ∈ ⍼⦄ (ง⍼_⍼)╰⌇ ░▒▓█ █ █▓▒░ ⟨⚹ ⌁ ⚹ ⌁ ⚹ ⊃ ♀⟩ ∵ 🜔 ≡ ⚠ (ಠ╭╮ಠ)⌁ ░▒▓█ ▓ ▒░ ⟪𖨆 ⎈ ♀⟫ ╰(•̀⌓•́)╯ ░▒▓ ▒ ░ ☾ ⌅ ☉ ∴ ⟨𖨆 → ⚹ → 🝰⟩ ⦃⎌ ♀⦄ (꩜◡꩜)໒꒱‧₊ ░▒ ░
+`,
+`
+A sunset going backwards cannot be said to have happened the same day in which it occurs.
+ai
+---
+░▒ ☉↓∸ ▓ ⟨∸↺↑☉⟩ ▓ ≢ ░▒ ⟨○≡○⟩ (◉⌓◉₊) ↯ ∄ ⚹ ░▒▓█
+`,
+`
+Love on the well-adjusted and ergonomically set monitor cannot be reciprocated. Screens are the cheapest they have ever been.
+---
+▓▒░ ⸢ ⌗⛭♡ ⸣ (◞‸◟) ⸢ ○ ⸣ ↛ ∅ ░▒▓█ █ ▒░ ♲∞⊡ (¬_¬) ░
 `
 ];
 
@@ -175,7 +219,7 @@ hybrid
 `
 Noita Sun Quest
 ---
-░ 𖨆 ∵ 🝰 ⤳ ⟨☸⟩ ∴ 🜚 ░ ( ✧‿✧ ) ▒ ⌁ ↠ ▓ ⟪∞⟫ ⤴ █ ⚠ ∵ 🜚 ≡ 🜺 █ ( ºΔº ‧̣̥̇) ↯ ⏇ ↯ ▓▒ ⟨🜍⟩ ≣ 𖭅 ⟷ ꙮ █▓▒░ ⬤ ░▒▓█
+ጸ ~ ✱∷░ ↬ ▲ ⁂ ∴ ◍ ⇎ ✷✷✷ ∴ ◉░ ∈ {◌↬◉} ∴ ◉▓ ✧(♡⊙﹏⊙)✧ ∴ ✶ ← 🜂🜃🜁🜄 ∴ ░▒▓█☉█▓▒░ ∈ ⌃⟨☾⟩⌃ ⋮ ✶ ← 🜂🜃🜁🜄🜍 ∴ ░▒▓█●█▓▒░ ∈ ⌄⟨☽⟩⌄ ⋮ ☉⋈● ∴ ✺ ⟨█▓▒░⟩∴⟨🜂⟩ ⋮ ጸ∴𓀀∷♕
 `,
 `
 Beachside Month
@@ -186,6 +230,90 @@ Beachside Month
 A brotherly chat
 ---
 ጸ ~ ⦓𖨆 ░ ⚙⦔ ∷ {█⌗} → ⟨░⚷ = ░⦿⟩ ~ ▒ (◞‸◟) ━━━━ 𓀀 ~ ጸ ━━━━ ░ ~ ░ ∴ {█⌗} ⇎ ░
+`,
+`
+Unlimited messages available
+---
+⟨ ⌗ ⟩ ↬ ⟨ ⧉ ⟩ ∴ 𖨆 ~ ⚶ ⇎ ▓ ↝ ꝏ   ٩( 🜛 ▽ 🜛 )۶
+`,
+`
+I'm just heading to the kitchen. Do you want anything?
+ai
+---
+ጸ ↬ 🜂 𓎂  ⇎  𖨆 ⟨ ∅ ⟩  ( ⸝⸝ 𝆑 ⏖ 𝆑 ⸝⸝ ) ﾉ
+`,
+`
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10.
+---
+ጸ ~ ⟨ · • ○ ◍ ◎ ⟩ ⇎ ⌖ ⏁ ⌖ ⇎ ⟨ ◒ ◐ ◓ ◑ ● ⟩ ∴ 𓀀
+`,
+`
+Days and Nights.
+---
+⟨ ☋ ↻ ☊ ⟩ ⤹ ጸ ⤸ ⦓ 🝰 ░ ꙰ ⦔     ꒰ ꙰ ◡ ꙰ ꒱
+`,
+`
+Emily
+---
+⟨ ☾ ∷ ░ ⟩ ⇶ ጸ ∷ ⌀ ↬ ⟨ 🜂 ⇎ ▒ ⟩ ↝ 🕮 ∴ 𖭅 ⇶ 🜏 ⇎ ▓ ↬ 𖨆 ∴ 🜨 ∷ █ █ █ ( ꩜ ⏖ ꩜ )∫ 🜃
+`,
+`
+To have you here is great luck. Simple, brought to you by the most complex machine ever grown.
+ai
+---
+[ ▓ 𖡄 ꙮ ▓ ] ↬ 𖨆 ∷ ⟨ ⌑ ✧ ⟩ ( ⌑ ᵕ ⌑ )✧
+`,
+`
+I don't understand.
+---
+𓁷 ↬ 𖨆 ~ [ █ ] ↬ ▓ ↬ ▒ ↬ ░ ∷ ⟨ ☼ ⟩ 𖤍
+`,
+`
+I don't understand. Will you? When the time comes - when your shadow is forced to part, and focus on further fields of life - will you visit me for a little while? A black moth will do.
+---
+[ ጸ ~ ⍰ ] ↬ ⟨ ጸ ∷ 𖨆 ⟩ ⇎ ⧹ ▓ ☾ ⧸ 𖥧 𖥧 ∴ 𖤍 ↬ ⟨ ጸ ∷ 𖤍 ⟩ ( ꈍ ∷ ꈍ )𖤍
+`,
+`
+How do you deal with depression?
+ai
+---
+ጸ ~ █ ⦓ ☾ █ ↔ █ ☾ ⦔ ጸ∴𖨆 ∈ ⟨ █ ▓ ▒ ░ ☼ ⟩ ⋯ ጸ (◞‸◟)ノ☼
+`,
+`
+Shifted, yet less than # - - - - - - - - - - more than * : the only heart cut is mine.
+---
+ጸ ∈ ⟨ * ─ 0 ─ # ⟩ ↬ ⇧𖨆 ∷ ░ ~ ─────♥̸───── ∴ ──∿── (˘•̩⌄•̩)⊃♥̸
+`,
+`
+Less than 3, more than 8.
+---
+╱ጸ╱░╱▒╱▓╱█∴(◞‸◟)╱▓╱▒╱░╱𖨆
+`,
+`
+Less than 3, more than 8. Cute.
+---
+ጸ ∷ ⟨ <3 >8 → ∞ ⟩ (¬‿◡)╮♡
+`,
+`
+Mimikium
+---
+ጸ ∈ ⟨ ⍜ ⍜ ⍜ ⟩ → ⍜ ∴ ⍜ ↬ ጸ ∷ ⟨ ▚ ∈ ⍜ ⟩ → ▚ ∩ ▓ ∴ ▓ ▓ ∴ ጸ ∴ 𖨆 ∷ (◉‸◌)˚
+`,
+`
+Something.
+---
+ጸ ↬ ⟨░∃░⟩∴𓀀(°∃°)
+`,
+`
+Gilgamesh.
+---
+𓀀 ⇄ ጸ ∴ 𓀀 ∷ ░ ∴ ጸ ⤳ 𓈖 𒀭 𑁍 ↬ 𓆓 ˚‧º·(˃̣̣̥⌓˂̣̣̥)‧º·˚ ጸ ∴ 𓀀 ∷ 𓊖
+`,
+`
+What is seeing something incomprehensible? Overly complex to be deemed as abstract? Would you care to reproduce it? Would you care to make something so?
+ai
+---
+ጸ ↬ ⟨░⟩ ∈ ⟨▒⟩ ⇎ ⦓{▓█⧉█(ꙮ﹏ꙮ)█⧉█▓}⦔ ∴ 𖨆 ∷ ░
 `
 ];
 
@@ -296,6 +424,15 @@ Text Editor
        ╰ ▒ [ ⍜ ⇎ (⧉≈⧉) ]
           ╰ ░ ( ‘-’* )૭✧
              ╰ ▓ ∴ [ 🝠 ⇢ 🝛 ]
+`,
+`
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10 dice
+---
+⍰
+█ { 𒁹 ⁝ 𒈫 ⁝ 𒐈 ⁝ 𒐉 ⁝ 𒐊 ⁝ 𒐋 ⁝ 𒐌 ⁝ 𒐍 ⁝ 𒐎 ⁝ 𒌋 }
+ ╰ ▓ { ⚀ ⚁ ⚂ ⚃ ⚄ ⚅ }
+    ╰ ▒ [ ⧉ ↺ ⧉ ]
+       ╰ ░ ∴ 🜲 ( ⇀ ‸ ↼‶ )
 `
 ];
 
@@ -444,7 +581,7 @@ const INTRO_DATA = [
     },
     { // Screen 5
         content: [
-            { type: 'text', text: "Each of them does have guidelines - some inkling of grammar and syntax, if you will. Any language or composition worthy of the name does.\n\n**But I will not share my secrets with you!** Where's the fun in that?\n\nIt would do neither of us any good. Once again, the point lies not in direct translation, but in an attempt to interpret.\n\nThen again, *you are in no obligation to do so!* This is a quiet place. Regardless of what you do with your time here, you can stay as long as you like.\n\nSee what you find.\n\n%{HAVE FUN :)}%" }
+            { type: 'text', text: "Each of them does have guidelines - some inkling of grammar and syntax, if you will. Any language or composition worthy of the name does.\n\n**But I will not share my secrets with you!** Where's the fun in that?\n\nIt would do neither of us any good. Once again, the point lies not in direct translation, but in an attempt to interpret.\n\nStill, *you are in no obligation to do so!* This is a quiet place. Regardless of what you do with your time here, you can stay as long as you like.\n\nSee what you find.\n\n%{HAVE FUN :)}%" }
         ]
     }
 ];
